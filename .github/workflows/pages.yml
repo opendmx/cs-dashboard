@@ -27,8 +27,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Test standalone app
-        run: node --test tests/app.test.mjs
+      - name: Test standalone app and Codespaces backups
+        run: node --test tests/app.test.mjs tests/backup.test.mjs
       - uses: actions/configure-pages@v5
       - name: Stage only public website files
         run: |

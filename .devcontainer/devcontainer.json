@@ -1,0 +1,5 @@
+{
+  "name": "Codespaces Admin",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "postStartCommand": "bash .devcontainer/backup.sh start"
+}
