@@ -351,7 +351,7 @@ test("every column in both tables has a sort control and filter", () => {
   const app = createApp();
   for (const id of ["spaceHead", "memberHead"]) {
     const head = app.element(id).innerHTML;
-    for (const key of ["name", "owner", "repository", "state", "cpus", "memory", "storage", "os", "region", "branch", "devcontainer", "prebuild", "baseImage", "actions"]) {
+    for (const key of ["name", "owner", "repository", "state", "cpus", "memory", "storage", "os", "region", "branch", "devcontainer", "prebuild", "actions"]) {
       assert.ok(head.includes(`data-sort="${key}"`));
       assert.ok(head.includes(`data-filter="${key}"`));
     }
@@ -464,7 +464,7 @@ test("environment properties are rendered, sortable and filterable in both inven
     const markup = app.element(kind === "member" ? "memberRows" : "spaceRows").innerHTML;
     assert.match(markup, /WestEurope/);
     assert.match(markup, /\.devcontainer\/devcontainer.json/);
-    assert.match(markup, /Not exposed by API/);
+    assert.doesNotMatch(markup, /Not exposed by API|Base image/);
   }
 });
 
@@ -482,7 +482,6 @@ test("former details render as individual columns, preserving missing values, fa
   assert.equal(cell("uncommitted"), "No");
   assert.equal(cell("unpushed"), "Not provided");
   assert.equal(cell("billableOwner"), "octodemo");
-  assert.equal(cell("baseImage"), "Not exposed by API");
   assert.doesNotMatch(markup, /<details/);
   assert.equal(app.run("booleanProperty(fixture.prebuild)"), "No");
   assert.equal(app.run("booleanProperty(null)"), "Not provided");
@@ -497,7 +496,7 @@ test("all former details have sortable and filterable columns in both tables", (
       assert.ok(app.element(id).innerHTML.includes(`data-filter="${key}${["created", "updated", "retentionExpires"].includes(key) ? "From" : ""}"`), key);
     }
   }
-  assert.equal(app.run("columns.length"), 31);
+  assert.equal(app.run("columns.length"), 30);
 });
 
 test("former numeric and date details sort using typed values, with independent filters", () => {

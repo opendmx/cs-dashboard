@@ -85,8 +85,7 @@ Use Refresh to check the current state after GitHub accepts a request.
 ### Base-image availability
 
 The documented organization Codespaces responses do **not** contain the container
-base image or resolved running image digest. The app explicitly displays
-**Not exposed by API**. `machine.operating_system` is the machine OS, not an image
+base image or resolved running image digest, so the app does not show a base-image column. `machine.operating_system` is the machine OS, not an image
 name. `devcontainer_path` identifies the configuration path, not the configuration
 contents or the actual running image.
 

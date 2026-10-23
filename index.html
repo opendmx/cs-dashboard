@@ -310,7 +310,7 @@
             </table>
             <div class="empty" id="emptyState" hidden><strong>No Codespaces match</strong>Try another search or refresh the organization inventory.</div>
           </div>
-          <p class="property-note">Scroll horizontally for all environment, lifecycle, billing, and Git properties. Every column can be sorted and filtered. Base image is not exposed by the organization Codespaces API; devcontainer path and OS do not identify the running image.</p>
+          <p class="property-note">Scroll horizontally for all environment, lifecycle, billing, and Git properties. Every column can be sorted and filtered.</p>
           <div class="pagination"><span id="resultCount">—</span><span>Actions are scoped to the selected organization above.</span></div>
           <div class="activity"><span id="activityText">Connected to GitHub REST API</span><span>API version 2026-03-10</span></div>
         </div>
@@ -395,7 +395,6 @@
       { key: "branch", label: "Branch", text: (c) => c.git_status?.ref || "Not provided" },
       { key: "devcontainer", label: "Devcontainer path", text: (c) => c.devcontainer_path || "Not provided" },
       { key: "prebuild", label: "Prebuild", text: (c) => booleanProperty(c.prebuild) },
-      { key: "baseImage", label: "Base image", text: () => "Not exposed by API" },
       { key: "lastUsed", label: "Last used", date: true, text: (c) => c.last_used_at || "", sort: (c) => {
         const time = Date.parse(c.last_used_at);
         return Number.isNaN(time) ? null : time;
