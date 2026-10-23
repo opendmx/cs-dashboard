@@ -5,7 +5,8 @@ No backend, package installation, build, or deployment secrets are required.
 
 ## Host on GitHub Pages
 
-1. Add `index.html`, `.nojekyll`, `.github/workflows/pages.yml`, and `tests/app.test.mjs`
+1. Add `index.html`, `.nojekyll`, `.github/workflows/pages.yml`, `.devcontainer/`,
+   `tests/app.test.mjs`, and `tests/backup.test.mjs`
    to a GitHub repository, preserving the directory structure.
 2. Under **Settings > Pages > Build and deployment**, select **GitHub Actions**.
 3. Push to `main` or `master`, or run **Deploy Codespaces Admin to GitHub Pages**
@@ -125,8 +126,44 @@ policies rather than weakening browser security.
 With Node.js 22 or newer:
 
 ```sh
-node --test tests/app.test.mjs
+node --test tests/app.test.mjs tests/backup.test.mjs
 ```
 
 Serve the folder with any local HTTP static server for browser development.
 Production hosting should use HTTPS.
+
+## Automatic Codespaces backups
+
+The `.devcontainer/devcontainer.json` starts an unattended backup service whenever
+the container starts. Rebuild an existing Codespace to apply this configuration.
+The service takes an initial snapshot, then checks every 60 seconds, creating a
+new `codespace-backup/<UTC timestamp>-<unique ID>` branch on `origin` when the saved
+working tree or source commit changes. It does not switch your working branch,
+alter your staging area, or commit to your working branch. The snapshot includes
+tracked changes, deletions, and non-ignored untracked files, plus the current
+commit's history. Unchanged snapshots do not create additional branches.
+
+**Keep secrets and private files out of Git.** Non-ignored untracked files are
+automatically published to the repository; tracked files are included even if
+later added to `.gitignore`. Backup branches are not automatically deleted.
+Git hooks are deliberately bypassed for unattended backup pushes, and backup
+commits use the `Codespace Backup` identity without signing. Repository rules,
+credentials, or unavailable networking can still prevent a push.
+
+Failed pushes remain queued as local Git refs and are retried on subsequent
+intervals and container starts. Errors and push results are recorded in
+`$(git rev-parse --absolute-git-dir)/codespace-backup/backup.log`.
+The service attempts a final backup if it receives a termination signal, but
+Codespaces has no guaranteed shutdown hook. **This is best-effort protection,
+not a zero-loss guarantee:** unsaved editor buffers, ignored files, uncommitted
+submodule contents, and changes since the last successful snapshot are not
+protected remotely. A stopped Codespace normally retains saved files; deleting
+it also destroys any backups that have not been pushed.
+
+The service requires Git, Bash, `flock`, and `timeout` (included in the configured
+image), and non-interactive push access to `origin`. It does not request or store
+additional credentials. To run a single backup when the service is not running:
+
+```sh
+bash .devcontainer/backup.sh once
+```
